@@ -18,32 +18,97 @@ CLOUDSHELL_LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAAyCAYAAAA
 @app.route('/')
 def display_inventory():
     resources_json = []
+    folders_json = []
     error_message = None
     
     try:
         # Connect to CloudShell API
         session = CloudShellAPISession(host=CLOUDSHELL_SERVER, username=USERNAME, password=PASSWORD, domain=DOMAIN)
 
-        # Get inventory
+        # Get inventory resources
         resources = session.GetResourceList().Resources
+        
+        # Get folders
+        try:
+            folders = session.GetFoldersInfo()
+            if hasattr(folders, 'Folders'):
+                for folder in folders.Folders:
+                    folders_json.append({
+                        'Name': folder.Name,
+                        'FullPath': folder.FullPath,
+                        'ParentName': folder.ParentName if hasattr(folder, 'ParentName') else ''
+                    })
+                print(f"Successfully fetched {len(folders_json)} folders")
+            else:
+                print("Warning: GetFoldersInfo returned no Folders attribute")
+        except Exception as folder_err:
+            # Handle gracefully if folders are not available
+            print(f"Warning: Could not retrieve folders: {str(folder_err)}")
+            
+        # Debug print to verify folder data
+        print(f"Folders: {json.dumps(folders_json)}")
         
         # Convert resources to JSON for use in JavaScript
         for resource in resources:
+            # Get folder path for this resource (if available)
+            folder_path = ''
+            try:
+                if hasattr(resource, 'FolderFullPath') and resource.FolderFullPath:
+                    folder_path = resource.FolderFullPath
+                elif hasattr(resource, 'FolderPath') and resource.FolderPath:
+                    folder_path = resource.FolderPath
+                elif hasattr(resource, 'FolderInfo') and resource.FolderInfo:
+                    folder_path = resource.FolderInfo
+            except Exception as e:
+                print(f"Error getting folder for resource {resource.Name}: {str(e)}")
+                
             resources_json.append({
                 'Name': resource.Name,
                 'ResourceModelName': resource.ResourceModelName,
                 'Address': resource.Address,
-                'FullAddress': resource.FullAddress
+                'FullAddress': resource.FullAddress,
+                'FolderPath': folder_path
             })
+            
+        # If we don't have folder info from the API, try to infer it from the resource structure
+        if not folders_json:
+            # Create a set of unique folder paths from the resources
+            unique_folders = set()
+            for resource in resources_json:
+                if resource['FolderPath']:
+                    unique_folders.add(resource['FolderPath'])
+                    
+                    # Also add parent folders
+                    parts = resource['FolderPath'].split('/')
+                    for i in range(1, len(parts)):
+                        parent_path = '/'.join(parts[:i])
+                        if parent_path:
+                            unique_folders.add(parent_path)
+            
+            # Convert to folder objects
+            for folder_path in unique_folders:
+                path_parts = folder_path.split('/')
+                folder_name = path_parts[-1]
+                parent_path = '/'.join(path_parts[:-1]) if len(path_parts) > 1 else ''
+                
+                folders_json.append({
+                    'Name': folder_name,
+                    'FullPath': folder_path,
+                    'ParentName': parent_path
+                })
+            
+            print(f"Inferred {len(folders_json)} folders from resource paths")
+            
     except Exception as e:
         error_message = f"Failed to connect to CloudShell server: {str(e)}"
+        print(f"Error: {error_message}")
 
     # Generate HTML content with three panels
-    
     from datetime import datetime
     
     return render_template_string(html_template, 
                                 resources_json=json.dumps(resources_json),
+                                folders_json=json.dumps(folders_json),
                                 error_message=error_message,
                                 cloudshell_logo=CLOUDSHELL_LOGO,
                                 server=CLOUDSHELL_SERVER,
