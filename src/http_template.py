@@ -35,6 +35,44 @@ html_template = """
                 margin-left: auto;
                 font-size: 14px;
             }
+            
+            /* Tab Navigation */
+            .tab-nav {
+                display: flex;
+                background-color: #f0f0f0;
+                border-bottom: 1px solid #ddd;
+            }
+            .tab-button {
+                padding: 12px 20px;
+                background-color: #f0f0f0;
+                border: none;
+                border-right: 1px solid #ddd;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                transition: background-color 0.2s;
+                color: #555;
+            }
+            .tab-button:hover {
+                background-color: #e0e0e0;
+            }
+            .tab-button.active {
+                background-color: #ffffff;
+                color: #0078d7;
+                border-bottom: 3px solid #0078d7;
+                margin-bottom: -1px;
+            }
+            
+            /* Tab Content */
+            .tab-content {
+                display: none;
+                flex: 1;
+                overflow: hidden;
+            }
+            .tab-content.active {
+                display: flex;
+            }
+            
             .main-content {
                 display: flex;
                 flex: 1;
@@ -310,6 +348,280 @@ html_template = """
                 margin-bottom: 0;
                 padding-left: 20px;
             }
+            /* Empty tab styles */
+            .empty-tab {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color: #f9f9f9;
+                padding: 20px;
+                text-align: center;
+            }
+            .empty-tab-icon {
+                font-size: 48px;
+                color: #0078d7;
+                margin-bottom: 20px;
+            }
+            .coming-soon {
+                font-size: 24px;
+                color: #0078d7;
+                margin-bottom: 10px;
+            }
+            .empty-tab p {
+                color: #777;
+                max-width: 600px;
+            }
+            
+            /* User management tab styles */
+            .tab-section {
+                margin-bottom: 30px;
+            }
+            
+            .action-buttons {
+                margin: 15px 0;
+            }
+            
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.4);
+                overflow: auto;
+            }
+            
+            .modal-content {
+                background-color: #fff;
+                margin: 10% auto;
+                padding: 20px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                width: 50%;
+                max-width: 500px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+            
+            .close-modal {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            
+            .close-modal:hover {
+                color: #000;
+            }
+            
+            .form-row {
+                margin-bottom: 15px;
+            }
+            
+            .form-row label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+            }
+            
+            .form-row input[type="text"],
+            .form-row input[type="email"],
+            .form-row input[type="password"],
+            .form-row textarea,
+            .form-row select {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                font-family: inherit;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+            
+            .form-row select[multiple] {
+                height: 120px;
+            }
+            
+            .form-row .checkbox-label {
+                display: inline-flex;
+                align-items: center;
+                margin-right: 15px;
+                font-weight: normal;
+            }
+            
+            .form-row .checkbox-label input[type="checkbox"] {
+                margin-right: 5px;
+            }
+            
+            .form-actions {
+                margin-top: 20px;
+                text-align: right;
+            }
+            
+            .btn {
+                padding: 8px 16px;
+                background-color: #f5f5f5;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                cursor: pointer;
+                font-family: inherit;
+                font-size: 14px;
+                transition: all 0.2s;
+                margin-left: 10px;
+            }
+            
+            .btn-primary {
+                background-color: #0078d7;
+                color: white;
+                border-color: #0078d7;
+            }
+            
+            .btn-danger {
+                background-color: #d9534f;
+                color: white;
+                border-color: #d9534f;
+            }
+            
+            .btn-primary:hover {
+                background-color: #006cc1;
+            }
+            
+            .btn-danger:hover {
+                background-color: #c9302c;
+            }
+            
+            .tabs-container {
+                display: flex;
+                height: 100%;
+            }
+            
+            .user-panel {
+                flex: 1;
+                padding: 20px;
+                overflow: auto;
+            }
+            
+            .success-message,
+            .error-message {
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 4px;
+            }
+            
+            .success-message {
+                background-color: #dff0d8;
+                color: #3c763d;
+                border: 1px solid #d6e9c6;
+            }
+            
+            .error-message {
+                background-color: #f2dede;
+                color: #a94442;
+                border: 1px solid #ebccd1;
+            }
+            
+            .user-tabs {
+                display: flex;
+                border-bottom: 1px solid #ddd;
+                margin-bottom: 20px;
+            }
+            
+            .user-tab {
+                padding: 10px 20px;
+                cursor: pointer;
+                border: 1px solid transparent;
+                border-bottom: none;
+                margin-bottom: -1px;
+            }
+            
+            .user-tab.active {
+                border-color: #ddd;
+                border-bottom-color: #fff;
+                background-color: #fff;
+                font-weight: 500;
+            }
+            
+            .user-tab-content {
+                display: none;
+            }
+            
+            .user-tab-content.active {
+                display: block;
+            }
+            
+            .status-badge {
+                display: inline-block;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                margin-right: 5px;
+            }
+            
+            .status-active {
+                background-color: #5cb85c;
+            }
+            
+            .status-inactive {
+                background-color: #d9534f;
+            }
+            
+            table.data-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+            
+            table.data-table th {
+                text-align: left;
+                padding: 10px;
+                background-color: #f2f8fd;
+                color: #0078d7;
+                border: 1px solid #eee;
+                font-weight: 600;
+            }
+            
+            table.data-table td {
+                padding: 10px;
+                border: 1px solid #eee;
+                vertical-align: top;
+            }
+            
+            table.data-table tr:hover {
+                background-color: #f5f9ff;
+            }
+            
+            .small-text {
+                font-size: 12px;
+                color: #777;
+            }
+            
+            .tag-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .tag {
+                background-color: #e0e0e0;
+                border-radius: 20px;
+                padding: 2px 8px;
+                font-size: 12px;
+                display: inline-block;
+            }
+            
+            .group-tag {
+                background-color: #d0e8ff;
+                color: #0078d7;
+            }
+            
+            .domain-tag {
+                background-color: #d8f0d8;
+                color: #3c763d;
+            }
         </style>
     </head>
     <body>
@@ -330,53 +642,277 @@ html_template = """
         </div>
         {% endif %}
         
-        <div class="main-content">
-            <div id="left-panel" class="panel">
-                <h2>Resource Tree</h2>
-                <div class="search-bar">
-                    <input type="text" id="resourceSearch" placeholder="Search resources..." onkeyup="filterResources()">
-                </div>
-                <div class="view-toggle">
-                    <button id="btnFlatView" onclick="switchView('flat')">Flat View</button>
-                    <button id="btnFolderView" class="active" onclick="switchView('folder')">Folder View</button>
-                </div>
-                <div class="tree-view" id="resource-tree">
-                    {% if error_message %}
-                    <p>CloudShell connection failed. Cannot load resources.</p>
-                    {% endif %}
-                    <!-- Resource tree will be populated dynamically -->
-                </div>
-            </div>
-            <div id="center-panel" class="panel">
-                <h2>Resource Details</h2>
-                <div id="resource-details">
-                    {% if error_message %}
-                    <p>CloudShell connection failed. Cannot load resource details.</p>
-                    {% else %}
-                    <p>Select a resource from the left panel to view details.</p>
-                    <div class="welcome-info">
-                        <h3>CloudShell Inventory Explorer</h3>
-                        <p>Use this tool to explore your CloudShell inventory:</p>
-                        <ul>
-                            <li>Browse resources in the left panel</li>
-                            <li>View resource details and attributes here</li>
-                            <li>Explore device structure in the right panel</li>
-                            <li>View connection information by clicking on ports</li>
-                            <li>Toggle between flat and folder view to see resources organized by folders</li>
-                        </ul>
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-button active" onclick="openTab('inventory')">Inventory</button>
+            <button class="tab-button" onclick="openTab('attributes')">Attributes</button>
+            <button class="tab-button" onclick="openTab('users')">Users & Groups</button>
+            <button class="tab-button" onclick="openTab('domains')">Domains</button>
+        </div>
+        
+        <!-- Inventory Tab Content -->
+        <div id="inventory" class="tab-content active">
+            <div class="main-content">
+                <div id="left-panel" class="panel">
+                    <h2>Resource Tree</h2>
+                    <div class="search-bar">
+                        <input type="text" id="resourceSearch" placeholder="Search resources..." onkeyup="filterResources()">
                     </div>
-                    {% endif %}
+                    <div class="view-toggle">
+                        <button id="btnFlatView" onclick="switchView('flat')">Flat View</button>
+                        <button id="btnFolderView" class="active" onclick="switchView('folder')">Folder View</button>
+                    </div>
+                    <div class="tree-view" id="resource-tree">
+                        {% if error_message %}
+                        <p>CloudShell connection failed. Cannot load resources.</p>
+                        {% endif %}
+                        <!-- Resource tree will be populated dynamically -->
+                    </div>
+                </div>
+                <div id="center-panel" class="panel">
+                    <h2>Resource Details</h2>
+                    <div id="resource-details">
+                        {% if error_message %}
+                        <p>CloudShell connection failed. Cannot load resource details.</p>
+                        {% else %}
+                        <p>Select a resource from the left panel to view details.</p>
+                        <div class="welcome-info">
+                            <h3>CloudShell Inventory Explorer</h3>
+                            <p>Use this tool to explore your CloudShell inventory:</p>
+                            <ul>
+                                <li>Browse resources in the left panel</li>
+                                <li>View resource details and attributes here</li>
+                                <li>Explore device structure in the right panel</li>
+                                <li>View connection information by clicking on ports</li>
+                                <li>Toggle between flat and folder view to see resources organized by folders</li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div id="right-panel" class="panel">
+                    <h2>Device Structure</h2>
+                    <div class="tree-view" id="device-structure">
+                        {% if error_message %}
+                        <p>CloudShell connection failed. Cannot load device structure.</p>
+                        {% else %}
+                        <p>Select a resource from the left panel to view its structure.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            <div id="right-panel" class="panel">
-                <h2>Device Structure</h2>
-                <div class="tree-view" id="device-structure">
-                    {% if error_message %}
-                    <p>CloudShell connection failed. Cannot load device structure.</p>
-                    {% else %}
-                    <p>Select a resource from the left panel to view its structure.</p>
-                    {% endif %}
+        </div>
+        
+        <!-- Attributes Tab Content -->
+        <div id="attributes" class="tab-content">
+            <div class="empty-tab">
+                <div class="empty-tab-icon">🔍</div>
+                <h2 class="coming-soon">Attribute Management Coming Soon</h2>
+                <p>This tab will provide functionality to view and manage CloudShell resource attributes, including:</p>
+                <ul>
+                    <li>Global attribute definitions</li>
+                    <li>Resource family attributes</li>
+                    <li>Resource model attributes</li>
+                    <li>Attribute rules and constraints</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Users & Groups Tab Content -->
+        <div id="users" class="tab-content">
+            <div class="tabs-container">
+                <div class="user-panel">
+                    <div id="user-notification" style="display: none;"></div>
+                    
+                    <div class="user-tabs">
+                        <div class="user-tab active" onclick="switchUserTab('users-management')">Users</div>
+                        <div class="user-tab" onclick="switchUserTab('groups-management')">Groups</div>
+                    </div>
+                    
+                    <!-- Users Management Tab -->
+                    <div id="users-management" class="user-tab-content active">
+                        <h2>User Management</h2>
+                        <p>Manage CloudShell users, their permissions and group memberships.</p>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="showAddUserModal()">Add User</button>
+                            <button class="btn" onclick="refreshUsers()">Refresh</button>
+                        </div>
+                        
+                        <div class="tab-section">
+                            <table class="data-table" id="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Admin</th>
+                                        <th>Groups</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body">
+                                    <tr>
+                                        <td colspan="6">Loading users...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Groups Management Tab -->
+                    <div id="groups-management" class="user-tab-content">
+                        <h2>Group Management</h2>
+                        <p>Manage CloudShell groups, their members and domain permissions.</p>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="showAddGroupModal()">Add Group</button>
+                            <button class="btn" onclick="refreshGroups()">Refresh</button>
+                        </div>
+                        
+                        <div class="tab-section">
+                            <table class="data-table" id="groups-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Role</th>
+                                        <th>Members</th>
+                                        <th>Domains</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groups-table-body">
+                                    <tr>
+                                        <td colspan="6">Loading groups...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            
+            <!-- Add User Modal -->
+            <div id="add-user-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal" onclick="closeModal('add-user-modal')">&times;</span>
+                    <h2>Add New User</h2>
+                    
+                    <form id="add-user-form" onsubmit="addNewUser(event)">
+                        <div class="form-row">
+                            <label for="username">Username *</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="password">Password *</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label>Status & Permissions</label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="is-active" name="is-active" checked>
+                                Active
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="is-admin" name="is-admin">
+                                Administrator
+                            </label>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="user-groups">Groups</label>
+                            <select id="user-groups" name="user-groups" multiple>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                            <div class="small-text">Hold Ctrl/Cmd to select multiple groups</div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn" onclick="closeModal('add-user-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Add User</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Add Group Modal -->
+            <div id="add-group-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal" onclick="closeModal('add-group-modal')">&times;</span>
+                    <h2>Add New Group</h2>
+                    
+                    <form id="add-group-form" onsubmit="addNewGroup(event)">
+                        <div class="form-row">
+                            <label for="group-name">Group Name *</label>
+                            <input type="text" id="group-name" name="group-name" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="group-description">Description</label>
+                            <textarea id="group-description" name="group-description" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="group-role">Role</label>
+                            <select id="group-role" name="group-role">
+                                <option value="Regular">Regular</option>
+                                <option value="DomainAdmin">Domain Admin</option>
+                                <option value="External">External</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="group-users">Users</label>
+                            <select id="group-users" name="group-users" multiple>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                            <div class="small-text">Hold Ctrl/Cmd to select multiple users</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="group-domains">Domains</label>
+                            <select id="group-domains" name="group-domains" multiple>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                            <div class="small-text">Hold Ctrl/Cmd to select multiple domains</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="read-only" name="read-only">
+                                View Only Access (for domains)
+                            </label>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn" onclick="closeModal('add-group-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Add Group</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Domains Tab Content -->
+        <div id="domains" class="tab-content">
+            <div class="empty-tab">
+                <div class="empty-tab-icon">🌐</div>
+                <h2 class="coming-soon">Domain Management Coming Soon</h2>
+                <p>This tab will provide functionality to manage CloudShell domains, including:</p>
+                <ul>
+                    <li>Domain creation and configuration</li>
+                    <li>Resource assignment to domains</li>
+                    <li>Domain-specific settings</li>
+                    <li>Cross-domain operations</li>
+                </ul>
             </div>
         </div>
         
@@ -386,6 +922,25 @@ html_template = """
 
         {% if not error_message %}
         <script>
+            // Tab switching functionality
+            function openTab(tabName) {
+                // Hide all tab contents
+                const tabContents = document.getElementsByClassName("tab-content");
+                for (let i = 0; i < tabContents.length; i++) {
+                    tabContents[i].classList.remove("active");
+                }
+                
+                // Deactivate all tab buttons
+                const tabButtons = document.getElementsByClassName("tab-button");
+                for (let i = 0; i < tabButtons.length; i++) {
+                    tabButtons[i].classList.remove("active");
+                }
+                
+                // Show the selected tab content and activate the button
+                document.getElementById(tabName).classList.add("active");
+                document.querySelector(`.tab-button[onclick="openTab('${tabName}')"]`).classList.add("active");
+            }
+            
             // Store all resources data
             const allResources = {{ resources_json|safe }};
             const allFolders = {{ folders_json|safe }};
@@ -797,7 +1352,7 @@ html_template = """
                     rootSpan.onclick = function(e) {
                         nestedUl.classList.toggle('active');
                         this.classList.toggle('caret-down');
-                        e.stopPropagation();
+                        e.stopPropagation(); // Prevent triggering parent clicks
                     };
                     
                     // Build subresources tree recursively
@@ -1102,6 +1657,492 @@ html_template = """
                 document.getElementById('btnFolderView').classList.remove('active');
                 buildResourceTree();
             };
+            
+            // User Management Scripts
+            function switchUserTab(tabId) {
+                // Hide all tab contents
+                document.querySelectorAll('.user-tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Show selected tab
+                document.getElementById(tabId).classList.add('active');
+                
+                // Update tab buttons
+                document.querySelectorAll('.user-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Find the button that opens this tab
+                document.querySelector(`.user-tab[onclick*='${tabId}']`).classList.add('active');
+            }
+            
+            let allUsers = [];
+            let allGroups = [];
+            let allDomains = [];
+            
+            // Fetch all users
+            function fetchUsers() {
+                return fetch('/get_users')
+                    .then(response => response.json())
+                    .then(data => {
+                        allUsers = data;
+                        return data;
+                    })
+                    .catch(error => {
+                        showNotification('error', 'Error fetching users: ' + error.message);
+                    });
+            }
+            
+            // Fetch all groups
+            function fetchGroups() {
+                return fetch('/get_groups')
+                    .then(response => response.json())
+                    .then(data => {
+                        allGroups = data;
+                        return data;
+                    })
+                    .catch(error => {
+                        showNotification('error', 'Error fetching groups: ' + error.message);
+                    });
+            }
+            
+            // Fetch all domains
+            function fetchDomains() {
+                return fetch('/get_domains')
+                    .then(response => response.json())
+                    .then(data => {
+                        allDomains = data;
+                        return data;
+                    })
+                    .catch(error => {
+                        showNotification('error', 'Error fetching domains: ' + error.message);
+                    });
+            }
+            
+            // Display users in table
+            function displayUsers(users) {
+                const tableBody = document.getElementById('users-table-body');
+                
+                if (!users || users.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6">No users found</td></tr>';
+                    return;
+                }
+                
+                tableBody.innerHTML = '';
+                
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    
+                    // Username
+                    const usernameCell = document.createElement('td');
+                    usernameCell.textContent = user.Username;
+                    row.appendChild(usernameCell);
+                    
+                    // Email
+                    const emailCell = document.createElement('td');
+                    emailCell.textContent = user.Email || '-';
+                    row.appendChild(emailCell);
+                    
+                    // Status
+                    const statusCell = document.createElement('td');
+                    const statusBadge = document.createElement('span');
+                    statusBadge.className = `status-badge ${user.IsActive ? 'status-active' : 'status-inactive'}`;
+                    statusCell.appendChild(statusBadge);
+                    statusCell.appendChild(document.createTextNode(user.IsActive ? 'Active' : 'Inactive'));
+                    row.appendChild(statusCell);
+                    
+                    // Admin
+                    const adminCell = document.createElement('td');
+                    adminCell.textContent = user.IsAdmin ? 'Yes' : 'No';
+                    row.appendChild(adminCell);
+                    
+                    // Groups
+                    const groupsCell = document.createElement('td');
+                    if (user.Groups && user.Groups.length > 0) {
+                        const tagList = document.createElement('div');
+                        tagList.className = 'tag-list';
+                        
+                        user.Groups.forEach(group => {
+                            const tag = document.createElement('span');
+                            tag.className = 'tag group-tag';
+                            tag.textContent = group;
+                            tagList.appendChild(tag);
+                        });
+                        
+                        groupsCell.appendChild(tagList);
+                    } else {
+                        groupsCell.textContent = '-';
+                    }
+                    row.appendChild(groupsCell);
+                    
+                    // Actions
+                    const actionsCell = document.createElement('td');
+                    
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = () => confirmDeleteUser(user.Username);
+                    
+                    actionsCell.appendChild(deleteButton);
+                    row.appendChild(actionsCell);
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Display groups in table
+            function displayGroups(groups) {
+                const tableBody = document.getElementById('groups-table-body');
+                
+                if (!groups || groups.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6">No groups found</td></tr>';
+                    return;
+                }
+                
+                tableBody.innerHTML = '';
+                
+                groups.forEach(group => {
+                    const row = document.createElement('tr');
+                    
+                    // Name
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = group.Name;
+                    row.appendChild(nameCell);
+                    
+                    // Description
+                    const descriptionCell = document.createElement('td');
+                    descriptionCell.textContent = group.Description || '-';
+                    row.appendChild(descriptionCell);
+                    
+                    // Role
+                    const roleCell = document.createElement('td');
+                    roleCell.textContent = group.Role || 'Regular';
+                    row.appendChild(roleCell);
+                    
+                    // Members
+                    const membersCell = document.createElement('td');
+                    if (group.Users && group.Users.length > 0) {
+                        const tagList = document.createElement('div');
+                        tagList.className = 'tag-list';
+                        
+                        group.Users.forEach(user => {
+                            const tag = document.createElement('span');
+                            tag.className = 'tag';
+                            tag.textContent = user;
+                            tagList.appendChild(tag);
+                        });
+                        
+                        membersCell.appendChild(tagList);
+                    } else {
+                        membersCell.textContent = '-';
+                    }
+                    row.appendChild(membersCell);
+                    
+                    // Domains
+                    const domainsCell = document.createElement('td');
+                    if (group.Domains && group.Domains.length > 0) {
+                        const tagList = document.createElement('div');
+                        tagList.className = 'tag-list';
+                        
+                        group.Domains.forEach(domain => {
+                            const tag = document.createElement('span');
+                            tag.className = 'tag domain-tag';
+                            tag.textContent = domain;
+                            tagList.appendChild(tag);
+                        });
+                        
+                        domainsCell.appendChild(tagList);
+                    } else {
+                        domainsCell.textContent = '-';
+                    }
+                    row.appendChild(domainsCell);
+                    
+                    // Actions
+                    const actionsCell = document.createElement('td');
+                    
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = () => confirmDeleteGroup(group.Name);
+                    
+                    actionsCell.appendChild(deleteButton);
+                    row.appendChild(actionsCell);
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Populate dropdown options
+            function populateDropdowns() {
+                // Populate user groups dropdown
+                const userGroupsSelect = document.getElementById('user-groups');
+                userGroupsSelect.innerHTML = '';
+                
+                allGroups.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group.Name;
+                    option.textContent = group.Name;
+                    userGroupsSelect.appendChild(option);
+                });
+                
+                // Populate group users dropdown
+                const groupUsersSelect = document.getElementById('group-users');
+                groupUsersSelect.innerHTML = '';
+                
+                allUsers.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.Username;
+                    option.textContent = user.Username;
+                    groupUsersSelect.appendChild(option);
+                });
+                
+                // Populate domains dropdown
+                const groupDomainsSelect = document.getElementById('group-domains');
+                groupDomainsSelect.innerHTML = '';
+                
+                allDomains.forEach(domain => {
+                    const option = document.createElement('option');
+                    option.value = domain;
+                    option.textContent = domain;
+                    groupDomainsSelect.appendChild(option);
+                });
+            }
+            
+            // Show notification
+            function showNotification(type, message) {
+                const notification = document.getElementById('user-notification');
+                notification.className = type === 'error' ? 'error-message' : 'success-message';
+                notification.textContent = message;
+                notification.style.display = 'block';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
+            }
+            
+            // Modal functions
+            function showAddUserModal() {
+                document.getElementById('add-user-modal').style.display = 'block';
+            }
+            
+            function showAddGroupModal() {
+                document.getElementById('add-group-modal').style.display = 'block';
+            }
+            
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+            
+            // Reset form fields
+            function resetForms() {
+                document.getElementById('add-user-form').reset();
+                document.getElementById('add-group-form').reset();
+            }
+            
+            // Add new user
+            function addNewUser(event) {
+                event.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const email = document.getElementById('email').value;
+                const isActive = document.getElementById('is-active').checked;
+                const isAdmin = document.getElementById('is-admin').checked;
+                
+                // Get selected groups
+                const groupsSelect = document.getElementById('user-groups');
+                const selectedGroups = Array.from(groupsSelect.selectedOptions).map(option => option.value);
+                
+                const userData = {
+                    username: username,
+                    password: password,
+                    email: email,
+                    isActive: isActive,
+                    isAdmin: isAdmin,
+                    groups: selectedGroups
+                };
+                
+                fetch('/add_user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('success', data.message);
+                        closeModal('add-user-modal');
+                        resetForms();
+                        refreshUsers();
+                    } else {
+                        showNotification('error', data.error || 'Failed to add user');
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'Error adding user: ' + error.message);
+                });
+            }
+            
+            // Add new group
+            function addNewGroup(event) {
+                event.preventDefault();
+                
+                const groupName = document.getElementById('group-name').value;
+                const description = document.getElementById('group-description').value;
+                const role = document.getElementById('group-role').value;
+                const readOnly = document.getElementById('read-only').checked;
+                
+                // Get selected users
+                const usersSelect = document.getElementById('group-users');
+                const selectedUsers = Array.from(usersSelect.selectedOptions).map(option => option.value);
+                
+                // Get selected domains
+                const domainsSelect = document.getElementById('group-domains');
+                const selectedDomains = Array.from(domainsSelect.selectedOptions).map(option => option.value);
+                
+                const groupData = {
+                    groupName: groupName,
+                    description: description,
+                    role: role,
+                    users: selectedUsers,
+                    domains: selectedDomains,
+                    readOnly: readOnly
+                };
+                
+                fetch('/add_group', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(groupData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('success', data.message);
+                        closeModal('add-group-modal');
+                        resetForms();
+                        refreshGroups();
+                    } else {
+                        showNotification('error', data.error || 'Failed to add group');
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'Error adding group: ' + error.message);
+                });
+            }
+            
+            // Confirm delete user
+            function confirmDeleteUser(username) {
+                if (confirm(`Are you sure you want to delete user "${username}"?`)) {
+                    deleteUser(username);
+                }
+            }
+            
+            // Delete user
+            function deleteUser(username) {
+                fetch('/delete_user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: username })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('success', data.message);
+                        refreshUsers();
+                    } else {
+                        showNotification('error', data.error || 'Failed to delete user');
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'Error deleting user: ' + error.message);
+                });
+            }
+            
+            // Confirm delete group
+            function confirmDeleteGroup(groupName) {
+                if (confirm(`Are you sure you want to delete group "${groupName}"?`)) {
+                    deleteGroup(groupName);
+                }
+            }
+            
+            // Delete group
+            function deleteGroup(groupName) {
+                fetch('/delete_group', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ groupName: groupName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('success', data.message);
+                        refreshGroups();
+                    } else {
+                        showNotification('error', data.error || 'Failed to delete group');
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'Error deleting group: ' + error.message);
+                });
+            }
+            
+            // Refresh users data
+            function refreshUsers() {
+                fetchUsers().then(users => {
+                    displayUsers(users);
+                    populateDropdowns();
+                });
+            }
+            
+            // Refresh groups data
+            function refreshGroups() {
+                fetchGroups().then(groups => {
+                    displayGroups(groups);
+                    populateDropdowns();
+                });
+            }
+            
+            // Initialize user management when Users tab is clicked
+            document.querySelector('.tab-button[onclick="openTab(\'users\')"]').addEventListener('click', initUserManagement);
+            
+            // Initialize user management
+            function initUserManagement() {
+                // Only initialize once
+                if (!window.userManagementInitialized) {
+                    // Fetch all data
+                    Promise.all([fetchUsers(), fetchGroups(), fetchDomains()])
+                    .then(([users, groups, domains]) => {
+                        displayUsers(users);
+                        displayGroups(groups);
+                        populateDropdowns();
+                    })
+                    .catch(error => {
+                        showNotification('error', 'Error initializing user management: ' + error.message);
+                    });
+                    
+                    window.userManagementInitialized = true;
+                }
+            }
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                const modals = document.getElementsByClassName('modal');
+                for (let i = 0; i < modals.length; i++) {
+                    if (event.target === modals[i]) {
+                        modals[i].style.display = 'none';
+                    }
+                }
+            });
         </script>
         {% else %}
         <script>
@@ -1112,6 +2153,25 @@ html_template = """
             document.getElementById('resourceSearch').addEventListener('input', function(e) {
                 alert('Search functionality is not available when disconnected from CloudShell.');
             });
+            
+            // Tab switching functionality
+            function openTab(tabName) {
+                // Hide all tab contents
+                const tabContents = document.getElementsByClassName("tab-content");
+                for (let i = 0; i < tabContents.length; i++) {
+                    tabContents[i].classList.remove("active");
+                }
+                
+                // Deactivate all tab buttons
+                const tabButtons = document.getElementsByClassName("tab-button");
+                for (let i = 0; i < tabButtons.length; i++) {
+                    tabButtons[i].classList.remove("active");
+                }
+                
+                // Show the selected tab content and activate the button
+                document.getElementById(tabName).classList.add("active");
+                document.querySelector(`.tab-button[onclick="openTab('${tabName}')"]`).classList.add("active");
+            }
         </script>
         {% endif %}
     </body>

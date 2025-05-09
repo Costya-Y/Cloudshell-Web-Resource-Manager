@@ -1,0 +1,214 @@
+from flask import Flask, jsonify, request
+from cloudshell.api.cloudshell_api import CloudShellAPISession
+from werkzeug.exceptions import BadRequest
+
+app = Flask(__name__)
+
+def get_api_session():
+    """Establish a session with the CloudShell API"""
+    # In a real-world scenario, you'd retrieve these from a secure location
+    # host = '192.168.85.22'
+    host = 'qs-il-lt-costay'
+    username = 'admin'
+    password = 'admin'
+    
+    return CloudShellAPISession(host, username, password)
+
+@app.route('/get_attributes')
+def get_attributes():
+    """Get all attributes for the current user"""
+    try:
+        api = get_api_session()
+        user_details = api.GetUserDetails()
+        return jsonify({
+            'Username': user_details.Username,
+            'Email': user_details.Email,
+            'IsActive': user_details.IsActive,
+            'IsAdmin': user_details.IsAdmin,
+            'Groups': [group.Name for group in user_details.Groups] if hasattr(user_details, 'Groups') else []
+        })
+    except Exception as e:
+        app.logger.error(f"Error getting user attributes: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/get_users')
+def get_users():
+    """Get all CloudShell users"""
+    try:
+        api = get_api_session()
+        users_info = api.GetAllUsersDetails()
+        return jsonify([{
+            'Username': user.Username,
+            'Email': user.Email,
+            'IsActive': user.IsActive,
+            'IsAdmin': user.IsAdmin,
+            'Groups': [group.Name for group in user.Groups] if hasattr(user, 'Groups') else []
+        } for user in users_info.Users])
+    except Exception as e:
+        app.logger.error(f"Error getting users: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/get_groups')
+def get_groups():
+    """Get all CloudShell groups"""
+    try:
+        api = get_api_session()
+        groups_info = api.GetGroupsDetails()
+        return jsonify([{
+            'Name': group.Name,
+            'Description': group.Description if hasattr(group, 'Description') else '',
+            'Role': group.Role if hasattr(group, 'Role') else '',
+            'Users': [user.Username for user in group.Users] if hasattr(group, 'Users') else [],
+            'Domains': [domain.Name for domain in group.Domains] if hasattr(group, 'Domains') else []
+        } for group in groups_info.Groups])
+    except Exception as e:
+        app.logger.error(f"Error getting groups: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/add_user', methods=['POST'])
+def add_user():
+    """Add a new CloudShell user"""
+    try:
+        api = get_api_session()
+        data = request.json
+        username = data.get('username', '')
+        password = data.get('password', '')
+        email = data.get('email', '')
+        is_active = data.get('isActive', False)
+        is_admin = data.get('isAdmin', False)
+        
+        result = api.AddNewUser(username, password, email, is_active, is_admin)
+        
+        # Add user to groups if specified
+        groups = data.get('groups', [])
+        for group in groups:
+            try:
+                api.AddUsersToGroup([username], group)
+            except Exception as e:
+                app.logger.error(f"Error adding user {username} to group {group}: {str(e)}")
+        
+        return jsonify({"success": True, "message": f"User {username} added successfully"})
+    except Exception as e:
+        app.logger.error(f"Error adding user: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/add_group', methods=['POST'])
+def add_group():
+    """Add a new CloudShell group"""
+    try:
+        api = get_api_session()
+        data = request.json
+        group_name = data.get('groupName', '')
+        description = data.get('description', '')
+        role = data.get('role', 'Regular')  # Default to Regular if not specified
+        
+        result = api.AddNewGroup(group_name, description, role)
+        
+        # Add users to group if specified
+        users = data.get('users', [])
+        if users:
+            try:
+                api.AddUsersToGroup(users, group_name)
+            except Exception as e:
+                app.logger.error(f"Error adding users to group {group_name}: {str(e)}")
+        
+        # Add domains to group if specified
+        domains = data.get('domains', [])
+        for domain in domains:
+            try:
+                read_only = data.get('readOnly', False)
+                api.AddGroupsToDomain(domain, [group_name], read_only)
+            except Exception as e:
+                app.logger.error(f"Error adding group {group_name} to domain {domain}: {str(e)}")
+        
+        return jsonify({"success": True, "message": f"Group {group_name} added successfully"})
+    except Exception as e:
+        app.logger.error(f"Error adding group: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/get_domains')
+def get_domains():
+    """Get all CloudShell domains"""
+    try:
+        api = get_api_session()
+        # This is a simplified approach - in real world, you'd need to collect domains from different sources
+        # as there's no direct GetAllDomains method in the API
+        # Here we'll get the Global domain and any others we can find
+        domains = ['Global']
+        
+        # Try to get more domains from the current user's context
+        try:
+            user_details = api.GetUserDetails(username='')  # Empty means current user
+            if hasattr(user_details, 'Groups'):
+                for group in user_details.Groups:
+                    if hasattr(group, 'Domains'):
+                        for domain in group.Domains:
+                            if domain.Name not in domains:
+                                domains.append(domain.Name)
+        except:
+            pass
+            
+        return jsonify(domains)
+    except Exception as e:
+        app.logger.error(f"Error getting domains: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/delete_user', methods=['POST'])
+def delete_user():
+    """Delete a CloudShell user"""
+    try:
+        api = get_api_session()
+        data = request.json
+        username = data.get('username', '')
+        
+        api.DeleteUser(username)
+        return jsonify({"success": True, "message": f"User {username} deleted successfully"})
+    except Exception as e:
+        app.logger.error(f"Error deleting user: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/delete_group', methods=['POST'])
+def delete_group():
+    """Delete a CloudShell group"""
+    try:
+        api = get_api_session()
+        data = request.json
+        group_name = data.get('groupName', '')
+        
+        api.DeleteGroup(group_name)
+        return jsonify({"success": True, "message": f"Group {group_name} deleted successfully"})
+    except Exception as e:
+        app.logger.error(f"Error deleting group: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/get_structure')
+def get_structure():
+    """Get the structure of the current user including groups and domains"""
+    try:
+        api = get_api_session()
+        user_details = api.GetUserDetails()
+        structure = {
+            'Username': user_details.Username,
+            'Groups': [],
+            'Domains': []
+        }
+        
+        if hasattr(user_details, 'Groups'):
+            for group in user_details.Groups:
+                group_info = {
+                    'Name': group.Name,
+                    'Domains': [domain.Name for domain in group.Domains] if hasattr(group, 'Domains') else []
+                }
+                structure['Groups'].append(group_info)
+                # Add domains to the top-level domains list if not already present
+                for domain in group_info['Domains']:
+                    if domain not in structure['Domains']:
+                        structure['Domains'].append(domain)
+        
+        return jsonify(structure)
+    except Exception as e:
+        app.logger.error(f"Error getting user structure: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
