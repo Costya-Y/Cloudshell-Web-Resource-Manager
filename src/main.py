@@ -29,24 +29,24 @@ def display_inventory():
         resources = session.GetResourceList().Resources
         
         # Get folders
-        try:
-            folders = session.GetFoldersInfo()
-            if hasattr(folders, 'Folders'):
-                for folder in folders.Folders:
-                    folders_json.append({
-                        'Name': folder.Name,
-                        'FullPath': folder.FullPath,
-                        'ParentName': folder.ParentName if hasattr(folder, 'ParentName') else ''
-                    })
-                print(f"Successfully fetched {len(folders_json)} folders")
-            else:
-                print("Warning: GetFoldersInfo returned no Folders attribute")
-        except Exception as folder_err:
-            # Handle gracefully if folders are not available
-            print(f"Warning: Could not retrieve folders: {str(folder_err)}")
+        # try:
+        #     # folders = session.GetF()
+        #     if hasattr(folders, 'Folders'):
+        #         for folder in folders.Folders:
+        #             folders_json.append({
+        #                 'Name': folder.Name,
+        #                 'FullPath': folder.FullPath,
+        #                 'ParentName': folder.ParentName if hasattr(folder, 'ParentName') else ''
+        #             })
+        #         print(f"Successfully fetched {len(folders_json)} folders")
+        #     else:
+        #         print("Warning: GetFoldersInfo returned no Folders attribute")
+        # except Exception as folder_err:
+        #     # Handle gracefully if folders are not available
+        #     print(f"Warning: Could not retrieve folders: {str(folder_err)}")
             
-        # Debug print to verify folder data
-        print(f"Folders: {json.dumps(folders_json)}")
+        # # Debug print to verify folder data
+        # print(f"Folders: {json.dumps(folders_json)}")
         
         # Convert resources to JSON for use in JavaScript
         for resource in resources:

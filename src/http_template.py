@@ -67,11 +67,20 @@ html_template = """
             .tree-view {
                 font-size: 14px;
                 font-family: 'Segoe UI', Arial, sans-serif;
+                display: block;
+                width: 100%;
             }
             .tree-view ul {
                 margin: 0;
                 padding-left: 20px;
                 list-style-type: none;
+                width: 100%;
+                display: block;
+            }
+            .tree-view li {
+                width: 100%;
+                display: block;
+                position: relative;
             }
             .tree-item {
                 cursor: pointer;
@@ -79,9 +88,13 @@ html_template = """
                 margin: 4px 0;
                 border-radius: 3px;
                 transition: background-color 0.2s;
+                display: block;
+                position: relative;
+            }
+            .tree-item span {
                 display: flex;
                 align-items: center;
-                position: relative;
+                width: 100%;
             }
             .tree-item:hover {
                 background-color: #e0e0e0;
@@ -111,16 +124,22 @@ html_template = """
                 cursor: pointer;
                 user-select: none;
                 margin-right: 4px;
-                display: flex;
-                align-items: center;
+                display: inline-block;
+                min-width: 16px;
+                min-height: 16px;
+                text-align: center;
+                position: relative;
+                z-index: 2;
             }
             .caret::before {
                 content: "▶";
                 color: #0078d7;
                 display: inline-block;
                 margin-right: 6px;
-                font-size: 10px;
+                font-size: 12px;
                 transition: transform 0.2s;
+                position: relative;
+                top: -1px;
             }
             .caret-down::before {
                 content: "▼";
@@ -132,12 +151,14 @@ html_template = """
                 margin-top: 2px;
                 margin-bottom: 2px;
                 list-style-type: none;
+                width: 100%;
+            }
+            .active {
+                display: block !important;
             }
             .nested .tree-item {
                 margin: 3px 0;
-            }
-            .active {
-                display: block;
+                width: 100%;
             }
             h2 {
                 margin-top: 0;
@@ -551,22 +572,25 @@ html_template = """
                 // Recursively build the folder tree
                 function createFolderElement(folderObj, container) {
                     const folderLi = document.createElement('li');
-                    const folderSpan = document.createElement('span');
-                    folderSpan.className = 'caret folder';
-                    folderSpan.textContent = folderObj.name;
-                    
+                    // Create separate caret span for expand/collapse
+                    const caretSpan = document.createElement('span');
+                    caretSpan.className = 'caret';
+                    folderLi.appendChild(caretSpan);
+                    // Create folder text span for name and icon
+                    const folderTextSpan = document.createElement('span');
+                    folderTextSpan.className = 'folder';
                     // Add folder icon
                     const folderIcon = document.createElement('i');
                     folderIcon.className = 'folder-icon';
                     folderIcon.textContent = '📁';
-                    folderSpan.prepend(folderIcon);
-                    
-                    folderLi.appendChild(folderSpan);
-                    
+                    folderTextSpan.prepend(folderIcon);
+                    folderTextSpan.append(' ' + folderObj.name);
+                    folderLi.appendChild(folderTextSpan);
+
                     // Create nested container for resources and subfolders
                     const nestedUl = document.createElement('ul');
                     nestedUl.className = 'nested';
-                    
+
                     // Add resources in this folder
                     folderObj.resources.forEach(resource => {
                         const resourceLi = document.createElement('li');
@@ -605,14 +629,20 @@ html_template = """
                     folderObj.subFolders.forEach(subFolder => {
                         createFolderElement(subFolder, nestedUl);
                     });
-                    
-                    // Toggle folder expand/collapse
-                    folderSpan.onclick = function(e) {
+
+                    // Toggle expand/collapse on caret click
+                    caretSpan.addEventListener('click', function(e) {
                         nestedUl.classList.toggle('active');
                         this.classList.toggle('caret-down');
-                        e.stopPropagation();
-                    };
-                    
+                        //e.stopPropagation();
+                    });
+                    // Also toggle expand/collapse when clicking the folder name
+                    folderTextSpan.addEventListener('click', function(e) {
+                        nestedUl.classList.toggle('active');
+                        caretSpan.classList.toggle('caret-down');
+                        //e.stopPropagation();
+                    });
+
                     folderLi.appendChild(nestedUl);
                     container.appendChild(folderLi);
                 }
@@ -741,8 +771,17 @@ html_template = """
                 // Create root resource node
                 const rootLi = document.createElement('li');
                 rootLi.className = 'tree-item'; // Add tree-item class to make it selectable
+                
+                // Add caret for root element
+                const caretSpan = document.createElement('span');
+                caretSpan.className = 'caret caret-down';
+                caretSpan.style.cursor = 'pointer';
+                caretSpan.style.paddingLeft = '1px';
+                caretSpan.style.width = '10px';
+                
+                // Add device name and icon in a separate span
                 const rootSpan = document.createElement('span');
-                rootSpan.className = 'caret caret-down folder';
+                rootSpan.style.paddingLeft = '1px';
                 
                 // Add device icon for the root resource
                 const deviceIcon = document.createElement('i');
@@ -765,27 +804,28 @@ html_template = """
                 
                 rootSpan.textContent = resource.Name;
                 rootSpan.prepend(deviceIcon);
-                rootLi.appendChild(rootSpan);
                 
-                // Make the root resource clickable to show its attributes
-                rootLi.addEventListener('click', function(e) {
-                    // Only handle click if it was directly on this element or its children
-                    // but not on the expand/collapse caret
-                    if (e.target === rootLi || 
-                        e.target === deviceIcon ||
-                        (e.target.nodeName === '#text' && e.target.parentNode === rootSpan)) {
-                        
-                        // Just load the resource details in the center panel
-                        selectResourceDetailsOnly(resource);
-                        
-                        // Visual feedback - add selected class
-                        document.querySelectorAll('#device-structure .tree-item').forEach(item => {
-                            item.classList.remove('selected');
-                        });
-                        rootLi.classList.add('selected');
-                        
-                        e.stopPropagation();
-                    }
+                // Create a container div that will hold both caret and text
+                const rootItemContainer = document.createElement('div');
+                rootItemContainer.className = 'folder';
+                rootItemContainer.style.display = 'flex';
+                rootItemContainer.style.alignItems = 'center';
+                rootItemContainer.appendChild(caretSpan);
+                rootItemContainer.appendChild(rootSpan);
+                
+                rootLi.appendChild(rootItemContainer);
+                
+                // Make the root name clickable to show resource attributes
+                rootSpan.addEventListener('click', function(e) {
+                    selectResourceDetailsOnly(resource);
+                    
+                    // Visual feedback - add selected class
+                    document.querySelectorAll('#device-structure .tree-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    rootLi.classList.add('selected');
+                    
+                    e.stopPropagation();
                 });
                 
                 if (data.subresources && data.subresources.length > 0) {
@@ -793,12 +833,12 @@ html_template = """
                     const nestedUl = document.createElement('ul');
                     nestedUl.className = 'nested active';
                     
-                    // Toggle root resource expand/collapse
-                    rootSpan.onclick = function(e) {
+                    // Toggle root resource expand/collapse when clicking on caret
+                    caretSpan.addEventListener('click', function(e) {
                         nestedUl.classList.toggle('active');
                         this.classList.toggle('caret-down');
                         e.stopPropagation();
-                    };
+                    });
                     
                     // Build subresources tree recursively
                     buildStructureTree(data.subresources, nestedUl, resource);
@@ -874,14 +914,41 @@ html_template = """
             }
             
             // Build the structure tree - separated into its own function
-            function buildStructureTree(subresources, container, resource) {
-                subresources.forEach(sub => {
+            function buildStructureTree(subresources, container, resource, path = "") {
+                // Sort resources by type: first directories (items with children), then leaf items
+                const sortedResources = [...subresources].sort((a, b) => {
+                    const aHasChildren = a.subresources && a.subresources.length > 0;
+                    const bHasChildren = b.subresources && b.subresources.length > 0;
+                    if (aHasChildren && !bHasChildren) return -1;
+                    if (!aHasChildren && bHasChildren) return 1;
+                    return a.name.localeCompare(b.name); // Then sort alphabetically
+                });
+                
+                sortedResources.forEach(sub => {
+                    // Track the full path to this subresource for unique identification
+                    const currentPath = path ? `${path}/${sub.name}` : sub.name;
                     const li = document.createElement('li');
+                    li.dataset.path = currentPath; // Store path for later reference
+                    li.className = 'tree-item'; // All items are tree items
+                    
+                    // Create a container for the row to hold all elements
+                    const rowContainer = document.createElement('div');
+                    rowContainer.style.display = 'flex';
+                    rowContainer.style.alignItems = 'center';
+                    rowContainer.style.width = '100%';
                     
                     if (sub.subresources && sub.subresources.length > 0) {
                         // This is a folder/component with children
-                        const span = document.createElement('span');
-                        span.className = 'caret folder';
+                        // Add explicit caret for expansion/collapse
+                        const caretSpan = document.createElement('span');
+                        caretSpan.className = 'caret'; // Start without caret-down class
+                        caretSpan.style.width = '10px';
+                        
+                        // Add the name span separately
+                        const nameSpan = document.createElement('span');
+                        nameSpan.style.paddingLeft = '5px';
+                        nameSpan.style.cursor = 'pointer';
+                        nameSpan.style.flexGrow = '1';
                         
                         // Choose appropriate icon based on subresource type
                         const subIcon = document.createElement('i');
@@ -913,31 +980,28 @@ html_template = """
                             subIcon.textContent = '📁'; // Default folder icon
                         }
                         
-                        span.textContent = sub.name;
-                        span.prepend(subIcon);
-                        li.appendChild(span);
-                        li.className = 'tree-item'; // Make it clickable and selectable
+                        nameSpan.textContent = sub.name;
+                        nameSpan.prepend(subIcon);
+                        
+                        // Add elements to the row container
+                        rowContainer.appendChild(caretSpan);
+                        rowContainer.appendChild(nameSpan);
+                        li.appendChild(rowContainer);
                         
                         // Create container for children
                         const childUl = document.createElement('ul');
-                        childUl.className = 'nested';
+                        childUl.className = 'nested'; // Start with nested class (collapsed)
                         
-                        // Add click handler for expand/collapse ONLY on the caret itself
-                        span.onclick = function(e) {
+                        // 1. Caret click only toggles expand/collapse
+                        caretSpan.onclick = function(e) {
                             childUl.classList.toggle('active');
                             this.classList.toggle('caret-down');
-                            e.stopPropagation(); // Prevent triggering parent clicks
+                            e.stopPropagation(); // Prevent any other handlers from firing
                         };
                         
-                        // Make component itself clickable to show attributes
-                        li.onclick = function(e) {
-                            // Don't handle clicks on the caret or folder icon - those are just for expanding
-                            if (e.target.classList.contains('caret') || 
-                                e.target.classList.contains('folder-icon')) {
-                                return; // Let the caret's own click handler manage expansion
-                            }
-                            
-                            showSubresourceDetails(sub.name, resource.Name);
+                        // 2. Name click only shows attributes
+                        nameSpan.onclick = function(e) {
+                            showSubresourceDetails(sub.name, resource.Name, currentPath);
                             
                             // Remove selected class from all items
                             document.querySelectorAll('#device-structure .tree-item').forEach(item => {
@@ -947,17 +1011,18 @@ html_template = """
                             // Add selected class to this item
                             li.classList.add('selected');
                             
-                            // Don't let the click propagate to parent elements
                             e.stopPropagation();
                         };
                         
-                        // Recursively build children
-                        buildStructureTree(sub.subresources, childUl, resource);
+                        // Recursively build the tree
+                        buildStructureTree(sub.subresources, childUl, resource, currentPath);
                         li.appendChild(childUl);
                     } else {
-                        // This is a leaf node (port/endpoint)
-                        const span = document.createElement('span');
-                        li.className = 'tree-item';
+                        // This is a leaf node (port/endpoint) - no caret needed
+                        const nameSpan = document.createElement('span');
+                        nameSpan.style.paddingLeft = '20px'; // Align with siblings that have carets
+                        nameSpan.style.cursor = 'pointer';
+                        nameSpan.style.flexGrow = '1';
                         
                         // Choose appropriate icon based on subresource type
                         const subIcon = document.createElement('i');
@@ -989,13 +1054,16 @@ html_template = """
                             subIcon.textContent = '📄'; // Default resource icon
                         }
                         
-                        span.textContent = sub.name;
-                        span.prepend(subIcon);
-                        li.appendChild(span);
+                        nameSpan.textContent = sub.name;
+                        nameSpan.prepend(subIcon);
                         
-                        // Make the leaf node clickable
-                        li.onclick = function(e) {
-                            showSubresourceDetails(sub.name, resource.Name);
+                        // Add elements to the row container
+                        rowContainer.appendChild(nameSpan);
+                        li.appendChild(rowContainer);
+                        
+                        // Make the leaf node clickable to show attributes
+                        nameSpan.onclick = function(e) {
+                            showSubresourceDetails(sub.name, resource.Name, currentPath);
                             
                             // Visual feedback - highlight the selected item
                             document.querySelectorAll('#device-structure .tree-item').forEach(item => {
@@ -1012,7 +1080,7 @@ html_template = """
             }
             
             // Function to show subresource details and connections
-            function showSubresourceDetails(subresourceName, parentName) {
+            function showSubresourceDetails(subresourceName, parentName, path) {
                 const detailsPanel = document.getElementById('resource-details');
                 detailsPanel.innerHTML = `
                     <h3>Port Details: ${subresourceName}</h3>
